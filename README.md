@@ -24,7 +24,7 @@
     - max_distance(максимальное расстояние от груза до машин).
 
 Для запуска проекта необходимо выполнить следующие команды:
-1. git pull https://github.com/Nikolaj-dev/welbex_testcase.git
+1. git clone https://github.com/Nikolaj-dev/welbex_testcase.git
 2. docker-compose up --build
 3. Ждите пока образ соберется. Это может занять некоторое время, так как будет происходить выгрузка данных из csv в БД.
    
