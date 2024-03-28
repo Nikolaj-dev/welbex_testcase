@@ -11,6 +11,7 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always  
 
   redis:
     image: redis:latest
