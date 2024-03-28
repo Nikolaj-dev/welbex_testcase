@@ -33,7 +33,7 @@ services:
     depends_on:
       - db
     restart: always
-    command: bash -c "sleep 60 && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "sleep 60 && python manage.py makemigrations && python manage.py migrate && python init_db.py && python manage.py runserver 0.0.0.0:8000"
       
   celery_worker:
     build:
