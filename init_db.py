@@ -21,6 +21,7 @@ def load_data_from_csv(file_path):
                 longitude=float(row['lng'])
             )
             location.save()
+            count += 1
             print(f"Создана локация {count}")
 
 
