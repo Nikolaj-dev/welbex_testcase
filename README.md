@@ -25,10 +25,6 @@
 
 Для запуска проекта необходимо выполнить следующие команды:
 1. git pull https://github.com/Nikolaj-dev/welbex_testcase.git
-2. python manage.py makemigrations
-3. python manage.py migrate
-4. python delivery_app.init_db.py
-5. python manage.py runserver
-6. celery -A welbex.celery worker -l info -P threads
-7. celery -A welbex beat -l info
+2. docker-compose up --build
+3. Ждите пока образ соберется. Это может занять некоторое время, так как будет происходить выгрузка данных из csv в БД.
    
