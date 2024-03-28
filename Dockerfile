@@ -1,14 +1,23 @@
-# Используем базовый образ Python 3.8
+# Use an official Python runtime as a parent image
 FROM python:3.11
 
-# Устанавливаем рабочую директорию внутри контейнера
+# Set environment variables
+ENV PYTHONUNBUFFERED 1
+
+# Set working directory in the container
 WORKDIR /code
 
-# Копируем файлы проекта внутрь контейнера
-COPY . .
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-# Устанавливаем зависимости Python из requirements.txt
-RUN pip install -r requirements.txt
+# Install Python dependencies
+COPY requirements.txt /code/
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Команда по умолчанию при запуске контейнера
-CMD ["bash"]
+# Copy the current directory contents into the container at /code/
+COPY . /code/
+
+# Command to run the migrations and initialize the database
+CMD ["./entrypoint.sh"]

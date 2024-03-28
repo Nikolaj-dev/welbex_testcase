@@ -1,43 +1,25 @@
 version: '3'
 
 services:
-  # Сервис для веб-приложения
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      # Переменные окружения для Django приложения
-      - SECRET_KEY=django-insecure-^2da2m9l*$0d!(39=*prqmi_gp=%5c_pky%7(zvhm*7hs8=9jj
-      - DEBUG=True
-      - ALLOWED_HOSTS=*
-      - DB_HOST=db
-      - DB_NAME=tt
-      - DB_USER=nick
-      - DB_PASSWORD=nick
-      - DB_PORT=5432
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-    # Команда для запуска веб-приложения
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python delivery_app/init_db.py && celery -A welbex.celery worker -l info -P threads & celery -A welbex beat -l info & python manage.py runserver 0.0.0.0:8000"
-
-  # Сервис для PostgreSQL
   db:
     image: postgres
     environment:
-      # Переменные окружения для настройки PostgreSQL
-      POSTGRES_DB: tt
-      POSTGRES_USER: nick
-      POSTGRES_PASSWORD: nick
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
 
-  # Сервис для Redis
   redis:
     image: redis
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+
 
