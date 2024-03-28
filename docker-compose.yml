@@ -33,7 +33,7 @@ services:
     depends_on:
       - db
     restart: always
-    command: sh -c 'while ! nc -z db 5432; do sleep 1; done && python manage.py migrate && python init_db.py && python manage.py runserver 0.0.0.0:8000'
+    command: sh -c 'while ! pg_isready -h db -p 5432 -q; do sleep 1; done && python manage.py migrate && python init_db.py && python manage.py runserver 0.0.0.0:8000'
 
   celery_worker:
     build:
@@ -49,7 +49,7 @@ services:
     depends_on:
       - django
     restart: always
-    command: sh -c 'while ! nc -z db 5432; do sleep 1; done && celery -A welbex.celery worker -l info -P threads'
+    command: sh -c 'while ! pg_isready -h db -p 5432 -q; do sleep 1; done && celery -A welbex.celery worker -l info -P threads'
 
   celery_beat:
     build:
@@ -65,4 +65,4 @@ services:
     depends_on:
       - django
     restart: always
-    command: sh -c 'while ! nc -z db 5432; do sleep 1; done && celery -A welbex beat -l info'
+    command: sh -c 'while ! pg_isready -h db -p 5432 -q; do sleep 1; done && celery -A welbex beat -l info'
