@@ -1,23 +1,19 @@
-# Use an official Python runtime as a parent image
+# Указываем базовый образ для Python
 FROM python:3.11
 
-# Set environment variables
+# Устанавливаем переменную окружения для неинтерактивного режима
 ENV PYTHONUNBUFFERED 1
 
-# Set working directory in the container
-WORKDIR /code
+# Создаем директорию внутри контейнера для приложения
+WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
+# Копируем все файлы из текущей директории в корень контейнера
+COPY . .
 
-# Install Python dependencies
-COPY requirements.txt /code/
+# Устанавливаем зависимости
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container at /code/
-COPY . /code/
+# Определяем команду для запуска приложения
+CMD ["bash", "-c", "python manage.py runserver & sleep 1 && celery -A welbex.celery worker -l info -P threads & sleep 1 && celery -A welbex beat -l info"]
 
-# Command to run the migrations and initialize the database
-CMD ["./entrypoint.sh"]
+

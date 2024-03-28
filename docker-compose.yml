@@ -2,24 +2,38 @@ version: '3'
 
 services:
   db:
-    image: postgres
+    image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   redis:
-    image: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
 
-  web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DJANGO_SECRET_KEY=${SECRET_KEY}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
     ports:
       - "8000:8000"
     depends_on:
       - db
-      - redis
+    command: bash -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && python init_db.py && python manage.py runserver && celery -A welbex.celery worker -l info -P threads && celery -A welbex beat -l info"
 
 
+
+    
