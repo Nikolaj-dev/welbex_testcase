@@ -33,7 +33,7 @@ services:
     depends_on:
       - db
     restart: always  
-    command: bash -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && python init_db.py && python manage.py runserver && celery -A welbex.celery worker -l info -P threads && celery -A welbex beat -l info"
+    command: bash -c "sleep 60 && python manage.py makemigrations && python manage.py migrate && python init_db.py && python manage.py runserver && celery -A welbex.celery worker -l info -P threads && celery -A welbex beat -l info"
 
 
 
