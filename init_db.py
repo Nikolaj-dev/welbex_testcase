@@ -11,6 +11,7 @@ from delivery_app.models import Location, Vehicle
 def load_data_from_csv(file_path):
     with open(file_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
+        count = 0
         for row in reader:
             location = Location.objects.create(
                 city=row['city'],
@@ -20,6 +21,7 @@ def load_data_from_csv(file_path):
                 longitude=float(row['lng'])
             )
             location.save()
+            print(f"Создана локация {count}")
 
 
 def load_vehicle_data():
