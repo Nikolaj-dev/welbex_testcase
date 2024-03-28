@@ -10,8 +10,9 @@ WORKDIR /app
 # Копируем все файлы из текущей директории в корень контейнера
 COPY . .
 
-# Устанавливаем зависимости
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apt-get update \
+    && apt-get install -y postgresql-client \
+    && pip install --no-cache-dir -r requirements.txt
 
 # Определяем команду для запуска приложения
 CMD ["bash", "-c", "python manage.py runserver & sleep 1 && celery -A welbex.celery worker -l info -P threads & sleep 1 && celery -A welbex beat -l info"]
