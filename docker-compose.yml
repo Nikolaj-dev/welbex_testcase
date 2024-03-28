@@ -33,7 +33,9 @@ services:
     depends_on:
       - db
     restart: always
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python init_db.py && python manage.py runserver 0.0.0.0:8000"
+    command: ["./wait-for-it.sh", "db:5432", "--", "bash", "-c", "python manage.py makemigrations && python manage.py migrate && python init_db.py && python manage.py runserver 0.0.0.0:8000"]
+    volumes:
+      - ./wait-for-it.sh:/wait-for-it.sh
       
   celery_worker:
     build:
@@ -49,7 +51,9 @@ services:
     depends_on:
       - django
     restart: always
-    command: celery -A welbex.celery worker -l info -P threads
+    command: ["./wait-for-it.sh", "db:5432", "--", "celery", "-A", "welbex.celery", "worker", "-l", "info", "-P", "threads"]
+    volumes:
+      - ./wait-for-it.sh:/wait-for-it.sh
       
   celery_beat:
     build:
@@ -65,7 +69,10 @@ services:
     depends_on:
       - django
     restart: always
-    command: celery -A welbex beat -l info
+    command: ["./wait-for-it.sh", "db:5432", "--", "celery", "-A", "welbex", "beat", "-l", "info"]
+    volumes:
+      - ./wait-for-it.sh:/wait-for-it.sh
+
 
 
 
