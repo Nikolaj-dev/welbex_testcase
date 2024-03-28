@@ -32,8 +32,40 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    restart: always  
-    command: bash -c "sleep 60 && python manage.py makemigrations && python manage.py migrate && python init_db.py && python manage.py runserver && celery -A welbex.celery worker -l info -P threads && celery -A welbex beat -l info"
+    restart: always
+    command: bash -c "sleep 60 && python manage.py makemigrations && python manage.py migrate && python init_db.py && python manage.py runserver"
+      
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DJANGO_SECRET_KEY=${SECRET_KEY}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+    depends_on:
+      - django
+    restart: always
+    command: celery -A welbex.celery worker -l info -P threads
+      
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DJANGO_SECRET_KEY=${SECRET_KEY}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+    depends_on:
+      - django
+    restart: always
+    command: celery -A welbex beat -l info
 
 
 
